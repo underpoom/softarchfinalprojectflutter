@@ -2,63 +2,69 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/widget/circle_button.dart';
-import 'package:softarchfinal/widget/navigation_drawer.dart';
-import 'package:softarchfinal/widget/post_container.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
+import 'package:softarchfinal/widgets/circle_button.dart';
+import 'package:softarchfinal/widgets/navigation_drawer.dart';
+import 'package:softarchfinal/widgets/post_container.dart';
 
+//text url tag userid
 var now = DateTime.now();
-List taglist = ['รักภูมิ', 'ไอควาย'];
 List posts = [
   {'postID': 0},
   {
     'postID': 1,
     'user_pic':
-        'https://scontent.fbkk2-8.fna.fbcdn.net/v/t31.18172-8/27983318_927126334112348_3039290882612106297_o.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeEJSKqBJw-NYpHLhniXxUaJWAX3VIQhaipYBfdUhCFqKiUnNtN-usrb1_VhxPCFS6WqQxm9QebFqsnh2xxOIP2J&_nc_ohc=FO6mJJc0WnwAX_CHgnT&_nc_ht=scontent.fbkk2-8.fna&oh=00_AfC7wOHDCa9NsrMLto1cGqlR31vhDHSV74XTWTd1S1uxbA&oe=639028DF',
+        'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
     'username': 'Username',
-    'user_verify': false,
     'postText':
         'F*ck youaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
     'attachedImageUrl': 'https://dc.lnwfile.com/_/dc/_raw/u8/0p/0u.jpg',
-    'tags': ['อยากซัดหน้าปัน'],
+    'tags': ['ไอควาย', 'ปัญญาอ่อน'],
     'post_date':
-        '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.'
+        '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.',
+    'report_count': 6,
   },
   {
     'postID': 2,
     'user_pic':
-        'https://scontent.fbkk2-8.fna.fbcdn.net/v/t31.18172-8/27983318_927126334112348_3039290882612106297_o.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeEJSKqBJw-NYpHLhniXxUaJWAX3VIQhaipYBfdUhCFqKiUnNtN-usrb1_VhxPCFS6WqQxm9QebFqsnh2xxOIP2J&_nc_ohc=FO6mJJc0WnwAX_CHgnT&_nc_ht=scontent.fbkk2-8.fna&oh=00_AfC7wOHDCa9NsrMLto1cGqlR31vhDHSV74XTWTd1S1uxbA&oe=639028DF',
+        'https://cdn.discordapp.com/avatars/695875199291228181/ff8949df85c202c508357c7a0bb1acd6.webp?size=80',
     'username': '윤보미 Chaipanna',
-    'user_verify': true,
     'postText':
         'ทำไมเด๋วนี้พี่คิงไม่ยอมให้หนูเล่นเกมด้วยเลยสนใจแต่อะไรก็ไม่รู้ รู้มั้ยว่าหนูคิดถึงพี่คิงขนาดไหน แล้วนี้เมื่อไหร่จะขอหนูเป็นแฟนหนูรอพี่คิงมาขอนานแล้วนะ งื้อๆ',
     'attachedImageUrl': '',
     'tags': ['สีชมพู', 'รักภูมิ', 'เด็กคิง'],
     'post_date':
-        '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.'
+        '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.',
+    'report_count': 2,
   },
   {
     'postID': 3,
     'user_pic':
-        'https://scontent.fbkk2-8.fna.fbcdn.net/v/t31.18172-8/27983318_927126334112348_3039290882612106297_o.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeEJSKqBJw-NYpHLhniXxUaJWAX3VIQhaipYBfdUhCFqKiUnNtN-usrb1_VhxPCFS6WqQxm9QebFqsnh2xxOIP2J&_nc_ohc=FO6mJJc0WnwAX_CHgnT&_nc_ht=scontent.fbkk2-8.fna&oh=00_AfC7wOHDCa9NsrMLto1cGqlR31vhDHSV74XTWTd1S1uxbA&oe=639028DF',
+        'https://cdn.discordapp.com/avatars/695875199291228181/ff8949df85c202c508357c7a0bb1acd6.webp?size=80',
     'username': '윤보미 Chaipanna',
-    'user_verify': false,
     'postText':
         'ทำไมเด๋วนี้พี่คิงไม่ยอมให้หนูเล่นเกมด้วยเลยสนใจแต่อะไรก็ไม่รู้ รู้มั้ยว่าหนูคิดถึงพี่คิงขนาดไหน แล้วนี้เมื่อไหร่จะขอหนูเป็นแฟนหนูรอพี่คิงมาขอนานแล้วนะ งื้อๆ',
     'attachedImageUrl': '',
     'tags': ['สีชมพู', 'รักภูมิ', 'เด็กคิง'],
     'post_date':
-        '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.'
+        '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.',
+    'report_count': 99,
   },
 ];
 
-class FollowingTagScreen extends StatefulWidget {
-  const FollowingTagScreen({Key? key}) : super(key: key);
+class AdminPostReportScreen extends StatefulWidget {
+  const AdminPostReportScreen(
+      {Key? key, required this.userData, required this.userModel})
+      : super(key: key);
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
 
   @override
-  State<FollowingTagScreen> createState() => _FollowingTagScreen();
+  State<AdminPostReportScreen> createState() => _AdminPostReportScreenState();
 }
 
-class _FollowingTagScreen extends State<FollowingTagScreen> {
+class _AdminPostReportScreenState extends State<AdminPostReportScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _openEndDrawer() {
@@ -71,10 +77,12 @@ class _FollowingTagScreen extends State<FollowingTagScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(posts.length);
     bool isAdmin = true;
     const double avatarDiameter = 70;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color.fromARGB(255, 222, 105, 21),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +116,10 @@ class _FollowingTagScreen extends State<FollowingTagScreen> {
         ],
       ),
       key: _scaffoldKey,
-      endDrawer: AdminNavigateDrawer(),
+      endDrawer: AdminNavigateDrawer(
+        userData: widget.userData,
+        userModel: widget.userModel,
+      ),
       body: Container(
         color: Colors.black,
         child: ListView.separated(
@@ -120,7 +131,7 @@ class _FollowingTagScreen extends State<FollowingTagScreen> {
                 padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
                 height: 24,
                 child: Text(
-                  'Your Following Tags',
+                  'Admin - Post Report Review',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontSize: 12,
@@ -129,9 +140,12 @@ class _FollowingTagScreen extends State<FollowingTagScreen> {
                   ),
                 ),
               );
-            if (taglist.any((e) => post['tags'].contains(e)))
-              return PostContainer(post: post, type: 'user');
-            return Container();
+            return PostContainer(
+              userData: widget.userData,
+              post: post,
+              type: 'report',
+              userModel: widget.userModel,
+            );
           },
           separatorBuilder: (context, index) => SizedBox(
             height: 10,

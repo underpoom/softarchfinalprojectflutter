@@ -83,9 +83,9 @@ class _PasswordFieldWidgetState extends State<PasswordFieldWidget> {
                   ? Icon(Icons.visibility_off)
                   : Icon(Icons.visibility),
             )),
-        validator: (password) => password != null &&
-                !_isPasswordEightCharacters &&
-                !_hasPasswordOneNumber &&
+        validator: (password) => password == null ||
+                !_isPasswordEightCharacters ||
+                !_hasPasswordOneNumber ||
                 !_hasPasswordUpperCase
             ? errortext
             : null,

@@ -1,15 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/screen/home.dart';
-import 'package:softarchfinal/screen/register.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
-import 'package:snippet_coder_utils/ProgressHUD.dart';
-import 'package:snippet_coder_utils/hex_color.dart';
-import 'package:snippet_coder_utils/list_helper.dart';
-import 'package:snippet_coder_utils/multi_images_utils.dart';
-import 'package:softarchfinal/widget/emailfield.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/pages/userdisplay.dart';
+import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
+import 'package:softarchfinal/widgets/emailfield.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:softarchfinal/callapi.dart';
+
+import 'package:softarchfinal/model/login_response.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -38,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
     double newheight = height - padding.top - padding.bottom;
 
     return Scaffold(
+        bottomNavigationBar: BottomBannerAd(),
         body: Form(
             key: globalKey,
             child: Container(
@@ -127,10 +131,25 @@ class _LoginScreenState extends State<LoginScreen> {
                               const Color.fromRGBO(76, 77, 79, 1), // background
                           onPrimary: Colors.white, // foreground
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (validateAndSave()) {
                             print("email: $email");
                             print("password: $password");
+                            //---
+                            var status = await userLogin(email, password);
+
+                            LoginResponseModel userData =
+                                loginResponseJson(status.body);
+
+                            var userModel = await getUser(userData.user_id);
+
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) {
+                              return userdisplay(
+                                userData: userData,
+                                userModel: userModel,
+                              );
+                            }), (route) => false);
                           }
                         },
                         child: const Text(

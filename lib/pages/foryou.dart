@@ -2,31 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/widget/circle_button.dart';
-import 'package:softarchfinal/widget/navigation_drawer.dart';
-import 'package:softarchfinal/widget/post_container.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
+import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
+import 'package:softarchfinal/widgets/circle_button.dart';
+import 'package:softarchfinal/widgets/navigation_drawer.dart';
+import 'package:softarchfinal/widgets/post_container.dart';
 
-//text url tag userid
 var now = DateTime.now();
+String username = '윤보미 Chaipanna';
+bool isAdmin = true;
+List taglist = ['รักภูมิ', 'ไอควาย'];
 List posts = [
   {'postID': 0},
   {
     'postID': 1,
     'user_pic':
-        'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
+        'https://scontent.fbkk2-8.fna.fbcdn.net/v/t31.18172-8/27983318_927126334112348_3039290882612106297_o.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeEJSKqBJw-NYpHLhniXxUaJWAX3VIQhaipYBfdUhCFqKiUnNtN-usrb1_VhxPCFS6WqQxm9QebFqsnh2xxOIP2J&_nc_ohc=FO6mJJc0WnwAX_CHgnT&_nc_ht=scontent.fbkk2-8.fna&oh=00_AfC7wOHDCa9NsrMLto1cGqlR31vhDHSV74XTWTd1S1uxbA&oe=639028DF',
     'username': 'Username',
+    'user_verify': false,
     'postText':
         'F*ck youaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
     'attachedImageUrl': 'https://dc.lnwfile.com/_/dc/_raw/u8/0p/0u.jpg',
-    'tags': ['ไอควาย', 'ปัญญาอ่อน'],
+    'tags': ['อยากซัดหน้าปัน'],
     'post_date':
         '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.'
   },
   {
     'postID': 2,
     'user_pic':
-        'https://cdn.discordapp.com/avatars/695875199291228181/ff8949df85c202c508357c7a0bb1acd6.webp?size=80',
+        'https://scontent.fbkk2-8.fna.fbcdn.net/v/t31.18172-8/27983318_927126334112348_3039290882612106297_o.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeEJSKqBJw-NYpHLhniXxUaJWAX3VIQhaipYBfdUhCFqKiUnNtN-usrb1_VhxPCFS6WqQxm9QebFqsnh2xxOIP2J&_nc_ohc=FO6mJJc0WnwAX_CHgnT&_nc_ht=scontent.fbkk2-8.fna&oh=00_AfC7wOHDCa9NsrMLto1cGqlR31vhDHSV74XTWTd1S1uxbA&oe=639028DF',
     'username': '윤보미 Chaipanna',
+    'user_verify': true,
     'postText':
         'ทำไมเด๋วนี้พี่คิงไม่ยอมให้หนูเล่นเกมด้วยเลยสนใจแต่อะไรก็ไม่รู้ รู้มั้ยว่าหนูคิดถึงพี่คิงขนาดไหน แล้วนี้เมื่อไหร่จะขอหนูเป็นแฟนหนูรอพี่คิงมาขอนานแล้วนะ งื้อๆ',
     'attachedImageUrl': '',
@@ -37,8 +44,9 @@ List posts = [
   {
     'postID': 3,
     'user_pic':
-        'https://cdn.discordapp.com/avatars/695875199291228181/ff8949df85c202c508357c7a0bb1acd6.webp?size=80',
+        'https://scontent.fbkk2-8.fna.fbcdn.net/v/t31.18172-8/27983318_927126334112348_3039290882612106297_o.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeEJSKqBJw-NYpHLhniXxUaJWAX3VIQhaipYBfdUhCFqKiUnNtN-usrb1_VhxPCFS6WqQxm9QebFqsnh2xxOIP2J&_nc_ohc=FO6mJJc0WnwAX_CHgnT&_nc_ht=scontent.fbkk2-8.fna&oh=00_AfC7wOHDCa9NsrMLto1cGqlR31vhDHSV74XTWTd1S1uxbA&oe=639028DF',
     'username': '윤보미 Chaipanna',
+    'user_verify': false,
     'postText':
         'ทำไมเด๋วนี้พี่คิงไม่ยอมให้หนูเล่นเกมด้วยเลยสนใจแต่อะไรก็ไม่รู้ รู้มั้ยว่าหนูคิดถึงพี่คิงขนาดไหน แล้วนี้เมื่อไหร่จะขอหนูเป็นแฟนหนูรอพี่คิงมาขอนานแล้วนะ งื้อๆ',
     'attachedImageUrl': '',
@@ -48,14 +56,18 @@ List posts = [
   },
 ];
 
-class AdminPostApproveScreen extends StatefulWidget {
-  const AdminPostApproveScreen({Key? key}) : super(key: key);
+class ForYouScreen extends StatefulWidget {
+  const ForYouScreen(
+      {Key? key, required this.userData, required this.userModel})
+      : super(key: key);
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
 
   @override
-  State<AdminPostApproveScreen> createState() => _AdminPostApproveScreenState();
+  State<ForYouScreen> createState() => _ForYouScreen();
 }
 
-class _AdminPostApproveScreenState extends State<AdminPostApproveScreen> {
+class _ForYouScreen extends State<ForYouScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _openEndDrawer() {
@@ -68,11 +80,11 @@ class _AdminPostApproveScreenState extends State<AdminPostApproveScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(posts.length);
-    bool isAdmin = true;
     const double avatarDiameter = 70;
     return Scaffold(
+      bottomNavigationBar: BottomBannerAd(),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color.fromARGB(255, 222, 105, 21),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +118,15 @@ class _AdminPostApproveScreenState extends State<AdminPostApproveScreen> {
         ],
       ),
       key: _scaffoldKey,
-      endDrawer: AdminNavigateDrawer(),
+      endDrawer: isAdmin
+          ? AdminNavigateDrawer(
+              userData: widget.userData,
+              userModel: widget.userModel,
+            )
+          : NavigateDrawer(
+              userData: widget.userData,
+              userModel: widget.userModel,
+            ),
       body: Container(
         color: Colors.black,
         child: ListView.separated(
@@ -118,7 +138,7 @@ class _AdminPostApproveScreenState extends State<AdminPostApproveScreen> {
                 padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
                 height: 24,
                 child: Text(
-                  'Admin - Post Review',
+                  'For you',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontSize: 12,
@@ -127,7 +147,15 @@ class _AdminPostApproveScreenState extends State<AdminPostApproveScreen> {
                   ),
                 ),
               );
-            return PostContainer(post: post, type: 'approve');
+            if (taglist.any((e) => post['tags'].contains(e)) ||
+                post['username'] == username)
+              return PostContainer(
+                userData: widget.userData,
+                post: post,
+                type: isAdmin ? 'admin' : 'user',
+                userModel: widget.userModel,
+              );
+            return Container();
           },
           separatorBuilder: (context, index) => SizedBox(
             height: 10,

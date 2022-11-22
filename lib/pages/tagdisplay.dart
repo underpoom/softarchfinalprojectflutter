@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/widget/circle_button.dart';
-import 'package:softarchfinal/widget/navigation_drawer.dart';
-import 'package:softarchfinal/widget/post_container.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
+import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
+import 'package:softarchfinal/widgets/circle_button.dart';
+import 'package:softarchfinal/widgets/navigation_drawer.dart';
+import 'package:softarchfinal/widgets/post_container.dart';
 
 var now = DateTime.now();
+bool isAdmin = false;
 bool tagstatus = false;
-String tagtoppic = 'รักภูมิ';
+//String tagtoppic = 'รักภูมิ';
 //List taglist = ['รักภูมิ', 'ไอควาย'];
-List posts = [
+/*List posts = [
   {'postID': 0},
   {
     'postID': 1,
@@ -51,10 +55,18 @@ List posts = [
     'post_date':
         '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.'
   },
-];
+];*/
 
 class TagDisplayScreen extends StatefulWidget {
-  const TagDisplayScreen({Key? key}) : super(key: key);
+  const TagDisplayScreen(
+      {Key? key,
+      required this.userData,
+      required this.userModel,
+      required this.tagtopic})
+      : super(key: key);
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
+  final String tagtopic;
 
   @override
   State<TagDisplayScreen> createState() => _TagDisplayScreenState();
@@ -76,7 +88,9 @@ class _TagDisplayScreenState extends State<TagDisplayScreen> {
     bool isAdmin = true;
     const double avatarDiameter = 70;
     return Scaffold(
+      bottomNavigationBar: BottomBannerAd(),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color.fromARGB(255, 222, 105, 21),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,13 +124,21 @@ class _TagDisplayScreenState extends State<TagDisplayScreen> {
         ],
       ),
       key: _scaffoldKey,
-      endDrawer: AdminNavigateDrawer(),
+      endDrawer: isAdmin
+          ? AdminNavigateDrawer(
+              userData: widget.userData,
+              userModel: widget.userModel,
+            )
+          : NavigateDrawer(
+              userData: widget.userData,
+              userModel: widget.userModel,
+            ),
       body: Container(
         color: Colors.black,
         child: ListView.separated(
-          itemCount: posts.length,
+          itemCount: widget.userData.posts.length,
           itemBuilder: (BuildContext context, int index) {
-            final post = posts[index];
+            final post = widget.userData.posts[index];
             if (index == 0)
               return Container(
                 color: Color.fromRGBO(217, 217, 217, 1),
@@ -126,7 +148,7 @@ class _TagDisplayScreenState extends State<TagDisplayScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '#' + tagtoppic,
+                        '#$widget.tagtoppic',
                         style: TextStyle(fontSize: 30),
                       ),
                       Row(
@@ -166,8 +188,13 @@ class _TagDisplayScreenState extends State<TagDisplayScreen> {
                 ),
               );
             //if (taglist.any((e) => post['tags'].contains(e)))
-            if (post['tags'].contains(tagtoppic))
-              return PostContainer(post: post, type: 'user');
+            if (post['tags'].contains(widget.tagtopic))
+              return PostContainer(
+                userData: widget.userData,
+                userModel: widget.userModel,
+                post: post,
+                type: isAdmin ? 'admin' : 'user',
+              );
             return Container();
           },
           separatorBuilder: (context, index) => SizedBox(

@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/screen/editprofilepage.dart';
-import 'package:softarchfinal/widget/navigation_drawer.dart';
-import 'package:softarchfinal/widget/circle_button.dart';
-import 'package:softarchfinal/widget/post_container.dart';
-import 'package:softarchfinal/widget/bottom_banner_ad.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
+import 'package:softarchfinal/pages/editprofilepage.dart';
+import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
+import 'package:softarchfinal/widgets/navigation_drawer.dart';
+import 'package:softarchfinal/widgets/post_container.dart';
+import 'package:softarchfinal/widgets/widgets.dart';
 
 var now = DateTime.now();
 List posts = [
@@ -46,7 +48,11 @@ List posts = [
 ];
 
 class UserProfilePage extends StatefulWidget {
-  const UserProfilePage({Key? key}) : super(key: key);
+  const UserProfilePage(
+      {Key? key, required this.userData, required this.userModel})
+      : super(key: key);
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
   @override
   State<UserProfilePage> createState() => _UserProfilePageState();
 }
@@ -63,11 +69,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   String avatarURL1 =
-      "https://i.pinimg.com/originals/d1/1e/20/d11e20d44501e1a59439b5344e07f5d7.jpg";
+      "https://cdn.discordapp.com/avatars/695875199291228181/ff8949df85c202c508357c7a0bb1acd6.webp?size=80";
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: NavigateDrawer(),
+      endDrawer: NavigateDrawer(
+        userData: widget.userData,
+        userModel: widget.userModel,
+      ),
       bottomNavigationBar: BottomBannerAd(),
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -104,72 +113,77 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 20.0,
-            ),
-            CircleAvatar(
-              radius: 56,
-              backgroundImage: NetworkImage(avatarURL1),
-            ),
-            SizedBox(
-              height: 12.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Thanapum Chaipunna",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+      body: Column(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        //crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 20.0,
+          ),
+          CircleAvatar(
+            radius: 56,
+            backgroundImage: NetworkImage(avatarURL1),
+          ),
+          SizedBox(
+            height: 12.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Thanapum Chaipunna",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
-                IconButton(
-                    icon: FaIcon(FontAwesomeIcons.pen),
-                    iconSize: 20,
-                    color: Colors.white,
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return EditProfilepage();
-                      }));
-                    }),
-              ],
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Divider(
-                color: Colors.red,
-                height: 18.0,
-                thickness: 0.5,
               ),
+              IconButton(
+                  icon: FaIcon(FontAwesomeIcons.pen),
+                  iconSize: 20,
+                  color: Colors.white,
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return EditProfilepage();
+                    }));
+                  }),
+            ],
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Divider(
+              color: Colors.red,
+              height: 18.0,
+              thickness: 0.5,
             ),
-            Container(
+          ),
+          Expanded(
+            child: Container(
               color: Colors.black,
               child: ListView.separated(
                 itemCount: posts.length,
                 itemBuilder: (BuildContext context, int index) {
                   final post = posts[index];
                   if (index == 0) return Container();
-                  return PostContainer(post: post, type: 'owner');
+                  return PostContainer(
+                    userData: widget.userData,
+                    post: post,
+                    type: 'owner',
+                    userModel: widget.userModel,
+                  );
                 },
                 separatorBuilder: (context, index) => SizedBox(
                   height: 10,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/widget/bottom_banner_ad.dart';
+import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
 
 class EditProfilepage extends StatefulWidget {
   const EditProfilepage({Key? key}) : super(key: key);

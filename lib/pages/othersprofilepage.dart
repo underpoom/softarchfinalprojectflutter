@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/widget/navigation_drawer.dart';
-import 'package:softarchfinal/widget/circle_button.dart';
-import 'package:softarchfinal/widget/post_container.dart';
-import 'package:softarchfinal/widget/bottom_banner_ad.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
+import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
+import 'package:softarchfinal/widgets/circle_button.dart';
+import 'package:softarchfinal/widgets/navigation_drawer.dart';
+import 'package:softarchfinal/widgets/post_container.dart';
 
 var now = DateTime.now();
+bool isAdmin = false;
 List posts = [
   {'postID': 0},
   {
@@ -35,6 +38,12 @@ List posts = [
 ];
 
 class OthersProfilePage extends StatefulWidget {
+  const OthersProfilePage(
+      {Key? key, required this.userData, required this.userModel})
+      : super(key: key);
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
+
   _OthersProfilePage createState() => _OthersProfilePage();
 }
 
@@ -55,7 +64,15 @@ class _OthersProfilePage extends State<OthersProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: NavigateDrawer(),
+      endDrawer: isAdmin
+          ? AdminNavigateDrawer(
+              userData: widget.userData,
+              userModel: widget.userModel,
+            )
+          : NavigateDrawer(
+              userData: widget.userData,
+              userModel: widget.userModel,
+            ),
       backgroundColor: Colors.black,
       bottomNavigationBar: BottomBannerAd(),
       appBar: AppBar(
@@ -94,8 +111,8 @@ class _OthersProfilePage extends State<OthersProfilePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          //mainAxisAlignment: MainAxisAlignment.center,
+          //crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
               height: 20.0,
@@ -181,17 +198,24 @@ class _OthersProfilePage extends State<OthersProfilePage> {
                 thickness: 0.5,
               ),
             ),
-            Container(
-              color: Colors.black,
-              child: ListView.separated(
-                itemCount: posts.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final post = posts[index];
-                  if (index == 0) return Container();
-                  return PostContainer(post: post, type: 'user');
-                },
-                separatorBuilder: (context, index) => SizedBox(
-                  height: 10,
+            Expanded(
+              child: Container(
+                color: Colors.black,
+                child: ListView.separated(
+                  itemCount: posts.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final post = posts[index];
+                    if (index == 0) return Container();
+                    return PostContainer(
+                      userData: widget.userData,
+                      post: post,
+                      type: isAdmin ? 'admin' : 'user',
+                      userModel: widget.userModel,
+                    );
+                  },
+                  separatorBuilder: (context, index) => SizedBox(
+                    height: 10,
+                  ),
                 ),
               ),
             ),

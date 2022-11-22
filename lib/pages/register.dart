@@ -1,15 +1,14 @@
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
-import 'package:softarchfinal/screen/home.dart';
-import 'package:softarchfinal/screen/login.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:snippet_coder_utils/ProgressHUD.dart';
 import 'package:snippet_coder_utils/hex_color.dart';
 import 'package:snippet_coder_utils/list_helper.dart';
 import 'package:snippet_coder_utils/multi_images_utils.dart';
-import 'package:softarchfinal/widget/emailfield.dart';
-import 'package:softarchfinal/widget/passwordfield.dart';
+import 'package:softarchfinal/widgets/emailfield.dart';
+import 'package:softarchfinal/widgets/passwordfield.dart';
+import 'package:softarchfinal/callapi.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -141,9 +140,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               "mobilenumber",
               "Mobile Number",
               (onValidateVal) {
+                final form = globalKey.currentState;
+                form?.save();
                 if (onValidateVal.isEmpty ||
-                    mobileNum.length == 10 &&
-                        !RegExp(r'[0-9]').hasMatch(mobileNum)) {
+                    mobileNum.length != 10 ||
+                    !(int.tryParse(mobileNum) != null)) {
                   return 'Mobile number can\'t be empty or must has 10 digits.';
                 }
 
@@ -226,7 +227,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               primary: const Color.fromRGBO(76, 77, 79, 1), // background
               onPrimary: Colors.white, // foreground
             ),
-            onPressed: () {
+            onPressed: () async {
               if (validateAndSave()) {
                 print("First Name: $firstName");
                 print("Last Name: $lastName");
@@ -234,6 +235,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 print("Mobile Number: $mobileNum");
                 print("Password: $password");
                 print("Confirm Password: $conPassword");
+                //----
+                int status = await userRegister(
+                  email,
+                  password,
+                  conPassword,
+                  mobileNum,
+                  firstName,
+                  lastName,
+                );
+                if (status == 200) {
+                  print('test');
+                  Navigator.of(context).pop();
+                  _registorDone(context);
+                }
               }
             },
             child: const Text(
@@ -267,5 +282,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else {
       return false;
     }
+  }
+
+  Future<String?> _registorDone(BuildContext context) {
+    return showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Center(child: const Text('Register Success')),
+          );
+        });
   }
 }

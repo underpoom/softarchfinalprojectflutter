@@ -2,13 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/widget/tag_button.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
+import 'package:softarchfinal/pages/othersprofilepage.dart';
+import 'package:softarchfinal/widgets/tag_button.dart';
 
 class PostContainer extends StatefulWidget {
   //type = approve report admin user owner
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
   final String type;
   final Map post;
-  const PostContainer({Key? key, required this.post, required this.type})
+  const PostContainer(
+      {Key? key,
+      required this.post,
+      required this.type,
+      required this.userData,
+      required this.userModel})
       : super(key: key);
 
   @override
@@ -65,21 +75,33 @@ class _PostContainer extends State<PostContainer> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              //ใส่ชื่อแต่ละคนโพสต์
-                              widget.post['username'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return OthersProfilePage(
+                                    userData: widget.userData,
+                                    userModel: widget.userModel,
+                                  );
+                                }));
+                              },
+                              child: Text(
+                                //ใส่ชื่อแต่ละคนโพสต์
+                                widget.post['username'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                             SizedBox(width: 10),
-                            if (widget.post['user_verify'])
-                              FaIcon(
-                                FontAwesomeIcons.userCheck,
-                                size: 15,
-                                color: Colors.green,
-                              )
+                            if (widget.post['user_verify'] != null)
+                              if (widget.post['user_verify'])
+                                FaIcon(
+                                  FontAwesomeIcons.userCheck,
+                                  size: 15,
+                                  color: Colors.green,
+                                )
                           ],
                         ),
                         Row(
@@ -94,7 +116,8 @@ class _PostContainer extends State<PostContainer> {
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (context, index) {
                                   return TagButton(
-                                    onPressed: () => print('tag'),
+                                    userData: widget.userData,
+                                    userModel: widget.userModel,
                                     tags: widget.post['tags'][index],
                                   );
                                 },

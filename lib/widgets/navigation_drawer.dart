@@ -3,16 +3,27 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/screen/followingtag.dart';
-import 'package:softarchfinal/screen/home.dart';
-import 'package:softarchfinal/screen/postapprove.dart';
-import 'package:softarchfinal/screen/postreport.dart';
-import 'package:softarchfinal/screen/userprofilepage.dart';
-import 'package:softarchfinal/screen/userreport.dart';
-import 'package:softarchfinal/screen/userverified.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
+import 'package:softarchfinal/pages/followingtag.dart';
+import 'package:softarchfinal/pages/foryou.dart';
+import 'package:softarchfinal/pages/home.dart';
+import 'package:softarchfinal/pages/post_page.dart';
+import 'package:softarchfinal/pages/postapprove.dart';
+import 'package:softarchfinal/pages/postreport.dart';
+import 'package:softarchfinal/pages/tagdisplay.dart';
+import 'package:softarchfinal/pages/userdisplay.dart';
+import 'package:softarchfinal/pages/userprofilepage.dart';
+import 'package:softarchfinal/pages/userreport.dart';
+import 'package:softarchfinal/pages/userverified.dart';
+import 'package:textfield_search/textfield_search.dart';
 
 class NavigateDrawer extends StatelessWidget {
-  const NavigateDrawer({Key? key}) : super(key: key);
+  const NavigateDrawer(
+      {Key? key, required this.userData, required this.userModel})
+      : super(key: key);
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +75,12 @@ class NavigateDrawer extends StatelessWidget {
           ),
           onTap: () {
             Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return userdisplay(
+                userData: userData,
+                userModel: userModel,
+              );
+            }));
           },
         ),
         ListTile(
@@ -77,6 +94,12 @@ class NavigateDrawer extends StatelessWidget {
           ),
           onTap: () {
             Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return ForYouScreen(
+                userData: userData,
+                userModel: userModel,
+              );
+            }));
           },
         ),
         ExpansionTile(
@@ -101,6 +124,8 @@ class NavigateDrawer extends StatelessWidget {
               ),
               onTap: () {
                 //action on press
+                Navigator.pop(context);
+                _showAddTag(context, userData, userModel);
               },
             ),
 
@@ -118,7 +143,10 @@ class NavigateDrawer extends StatelessWidget {
                 //action on press
                 Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return FollowingTagScreen();
+                  return FollowingTagScreen(
+                    userData: userData,
+                    userModel: userModel,
+                  );
                 }));
               },
             ),
@@ -138,7 +166,10 @@ class NavigateDrawer extends StatelessWidget {
           onTap: () {
             Navigator.pop(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return UserProfilePage();
+              return UserProfilePage(
+                userData: userData,
+                userModel: userModel,
+              );
             }));
           },
         ),
@@ -152,7 +183,27 @@ class NavigateDrawer extends StatelessWidget {
             style: TextStyle(color: Colors.white, fontSize: 24),
           ),
           onTap: () {
+            _reqVerify(context);
             Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          trailing: Icon(
+            Icons.logout,
+            size: 30,
+            color: Colors.white,
+          ),
+          title: Text(
+            "Logout",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+            maxLines: 1,
+          ),
+          onTap: () {
+            //action on press
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) {
+              return HomeScreen();
+            }), (route) => false);
           },
         ),
       ],
@@ -161,7 +212,11 @@ class NavigateDrawer extends StatelessWidget {
 }
 
 class AdminNavigateDrawer extends StatelessWidget {
-  const AdminNavigateDrawer({Key? key}) : super(key: key);
+  const AdminNavigateDrawer(
+      {Key? key, required this.userData, required this.userModel})
+      : super(key: key);
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
 
   @override
   Widget build(BuildContext context) {
@@ -213,6 +268,12 @@ class AdminNavigateDrawer extends StatelessWidget {
           ),
           onTap: () {
             Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return userdisplay(
+                userData: userData,
+                userModel: userModel,
+              );
+            }));
           },
         ),
         ListTile(
@@ -226,6 +287,12 @@ class AdminNavigateDrawer extends StatelessWidget {
           ),
           onTap: () {
             Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return ForYouScreen(
+                userData: userData,
+                userModel: userModel,
+              );
+            }));
           },
         ),
         ExpansionTile(
@@ -249,7 +316,8 @@ class AdminNavigateDrawer extends StatelessWidget {
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
               onTap: () {
-                //action on press
+                Navigator.pop(context);
+                _showAddTag(context, userData, userModel);
               },
             ),
 
@@ -265,6 +333,13 @@ class AdminNavigateDrawer extends StatelessWidget {
               ),
               onTap: () {
                 //action on press
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return FollowingTagScreen(
+                    userData: userData,
+                    userModel: userModel,
+                  );
+                }));
               },
             ),
 
@@ -283,7 +358,10 @@ class AdminNavigateDrawer extends StatelessWidget {
           onTap: () {
             Navigator.pop(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return UserProfilePage();
+              return UserProfilePage(
+                userData: userData,
+                userModel: userModel,
+              );
             }));
           },
         ),
@@ -310,7 +388,10 @@ class AdminNavigateDrawer extends StatelessWidget {
               onTap: () {
                 //action on press
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return AdminPostApproveScreen();
+                  return AdminPostApproveScreen(
+                    userData: userData,
+                    userModel: userModel,
+                  );
                 }));
               },
             ),
@@ -328,7 +409,10 @@ class AdminNavigateDrawer extends StatelessWidget {
               onTap: () {
                 //action on press
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return AdminPostReportScreen();
+                  return AdminPostReportScreen(
+                    userData: userData,
+                    userModel: userModel,
+                  );
                 }));
               },
             ),
@@ -346,7 +430,10 @@ class AdminNavigateDrawer extends StatelessWidget {
               onTap: () {
                 //action on press
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return UserVerifiedScreen();
+                  return UserVerifiedScreen(
+                    userData: userData,
+                    userModel: userModel,
+                  );
                 }));
               },
             ),
@@ -363,7 +450,10 @@ class AdminNavigateDrawer extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return UserReportScreen();
+                  return UserReportScreen(
+                    userData: userData,
+                    userModel: userModel,
+                  );
                 }));
               },
             ),
@@ -382,9 +472,134 @@ class AdminNavigateDrawer extends StatelessWidget {
           ),
           onTap: () {
             //action on press
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) {
+              return HomeScreen();
+            }), (route) => false);
           },
         ),
       ],
     );
   }
 }
+
+List<String> _reallist = ['test1', 'test2', 'gag', 'meme'];
+String searchtag = '';
+
+Future<List> fetchdata() async {
+  return _reallist;
+}
+
+Future<String?> _showAddTag(BuildContext context, LoginResponseModel userData,
+    final UserInfoModel userModel) {
+  TextEditingController myController = TextEditingController();
+
+  return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Tags Search'),
+          content: Container(
+            height: MediaQuery.of(context).size.width * 1,
+            width: MediaQuery.of(context).size.width * 1,
+            child: Form(
+                child: ListView(
+              children: <Widget>[
+                TextFieldSearch(
+                    label: 'Simple Future List',
+                    controller: myController,
+                    minStringLength: 1,
+                    future: () {
+                      return fetchdata();
+                    }),
+              ],
+            )),
+          ),
+          actions: <Widget>[
+            TextButton(
+                onPressed: (() => Navigator.pop(context, 'Cancel')),
+                child: const Text('Cancel')),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(myController.text);
+                searchtag = myController.text;
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return TagDisplayScreen(
+                    userData: userData,
+                    userModel: userModel,
+                    tagtopic: searchtag,
+                  );
+                }));
+                myController.clear();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      });
+}
+
+Future<String?> _reqVerify(BuildContext context) {
+  return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Verify Request Success'),
+        );
+      });
+}
+
+
+/*class MySearchDelegate extends SearchDelegate {
+  @override
+  List<Widget>? buildActions(BuildContext context) => [
+        IconButton(
+            onPressed: () {
+              if (query.isEmpty) {
+                close(context, null);
+              } else {
+                query = '';
+              }
+            },
+            icon: FaIcon(FontAwesomeIcons.xmark))
+      ];
+
+  @override
+  Widget? buildLeading(BuildContext context) => IconButton(
+      onPressed: () => close(context, null),
+      icon: FaIcon(FontAwesomeIcons.arrowLeft));
+
+  @override
+  Widget buildResults(BuildContext context) => Center(
+        child: Text(
+          query,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        ),
+      );
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> suggestions = _reallist.where((item) {
+      final result = item.toLowerCase();
+      final input = query.toLowerCase();
+
+      return result.contains(input);
+    }).toList();
+
+    return ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final suggestion = suggestions[index];
+
+          return ListTile(
+            title: Text(suggestion),
+            onTap: () {
+              query = suggestion;
+
+              showResults(context);
+            },
+          );
+        });
+    throw UnimplementedError();
+  }
+}*/

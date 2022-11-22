@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:softarchfinal/widget/circle_button.dart';
-import 'package:softarchfinal/widget/navigation_drawer.dart';
-import 'package:softarchfinal/widget/profile_container.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
+import 'package:softarchfinal/widgets/profile_container.dart';
+
+import '../widgets/widgets.dart';
 
 var now = DateTime.now();
 List profiles = [
@@ -18,6 +20,7 @@ List profiles = [
     'last_name': 'Junochut',
     'email': 'prayat69.j@kmitl.ac.th',
     'mobile_number': '099-456-7856',
+    'report_count': 999,
   },
   {
     'profileID': 2,
@@ -28,6 +31,7 @@ List profiles = [
     'last_name': 'Chaipanna',
     'email': 'KingRukDek99@kmitl.ac.th',
     'mobile_number': '082-368-6056',
+    'report_count': 2,
   },
   {
     'profileID': 3,
@@ -38,17 +42,22 @@ List profiles = [
     'last_name': 'Chaipanna',
     'email': 'KingRukDek99@kmitl.ac.th',
     'mobile_number': '082-368-6056',
+    'report_count': 6,
   },
 ];
 
-class UserVerifiedScreen extends StatefulWidget {
-  const UserVerifiedScreen({Key? key}) : super(key: key);
+class UserReportScreen extends StatefulWidget {
+  const UserReportScreen(
+      {Key? key, required this.userData, required this.userModel})
+      : super(key: key);
+  final LoginResponseModel userData;
+  final UserInfoModel userModel;
 
   @override
-  State<UserVerifiedScreen> createState() => _UserVerifiedScreenState();
+  State<UserReportScreen> createState() => _UserReportScreenState();
 }
 
-class _UserVerifiedScreenState extends State<UserVerifiedScreen> {
+class _UserReportScreenState extends State<UserReportScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _openEndDrawer() {
@@ -64,6 +73,7 @@ class _UserVerifiedScreenState extends State<UserVerifiedScreen> {
     const double avatarDiameter = 70;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color.fromARGB(255, 222, 105, 21),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +107,10 @@ class _UserVerifiedScreenState extends State<UserVerifiedScreen> {
         ],
       ),
       key: _scaffoldKey,
-      endDrawer: AdminNavigateDrawer(),
+      endDrawer: AdminNavigateDrawer(
+        userData: widget.userData,
+        userModel: widget.userModel,
+      ),
       body: Container(
         color: Colors.black,
         child: ListView.separated(
@@ -109,7 +122,7 @@ class _UserVerifiedScreenState extends State<UserVerifiedScreen> {
                 padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
                 height: 24,
                 child: Text(
-                  'Admin - Verify Review',
+                  'Admin - User Report Review',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontSize: 12,
@@ -118,7 +131,7 @@ class _UserVerifiedScreenState extends State<UserVerifiedScreen> {
                   ),
                 ),
               );
-            return ProfileContainer(profile: profile, type: 'verify');
+            return ProfileContainer(profile: profile, type: 'report');
           },
           separatorBuilder: (context, index) => SizedBox(
             height: 10,

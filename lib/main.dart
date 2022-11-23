@@ -1,4 +1,6 @@
 import 'package:softarchfinal/callapi.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/post_info.dart';
 import 'package:softarchfinal/pages/home.dart';
 import 'package:softarchfinal/pages/userdisplay.dart';
 import 'package:flutter/material.dart';

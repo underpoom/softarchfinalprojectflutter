@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:softarchfinal/callapi.dart';
 import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/post_info.dart';
 import 'package:softarchfinal/model/user_info.dart';
 import 'package:softarchfinal/widgets/circle_button.dart';
 import 'package:softarchfinal/widgets/navigation_drawer.dart';
 import 'package:softarchfinal/widgets/post_container.dart';
 
 //text url tag userid
-var now = DateTime.now();
+/*var now = DateTime.now();
 List posts = [
   {'postID': 0},
   {
@@ -51,14 +53,12 @@ List posts = [
         '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.',
     'report_count': 99,
   },
-];
+];*/
 
 class AdminPostReportScreen extends StatefulWidget {
-  const AdminPostReportScreen(
-      {Key? key, required this.userData, required this.userModel})
+  const AdminPostReportScreen({Key? key, required this.userData})
       : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
   @override
   State<AdminPostReportScreen> createState() => _AdminPostReportScreenState();
@@ -66,6 +66,7 @@ class AdminPostReportScreen extends StatefulWidget {
 
 class _AdminPostReportScreenState extends State<AdminPostReportScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<PostInfoModel> posts = [];
 
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
@@ -76,9 +77,33 @@ class _AdminPostReportScreenState extends State<AdminPostReportScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    GetAllReportedPosts(widget.userData.user.user_id).then((posts) {
+      setState(() {
+        this.posts = posts;
+      });
+    });
+    setState(() {
+      this.posts.sort((b, a) {
+        return a.report_count.compareTo(b.report_count);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print(posts.length);
-    bool isAdmin = true;
+    /*posts.insert(
+        0,
+        PostInfoModel(
+            post_id: -1,
+            post_date: DateTime.now(),
+            post_text: '',
+            attached_image_url: '',
+            verified: true,
+            report_count: 0));*/
+    //print(posts.length);
+    //bool isAdmin = true;
     const double avatarDiameter = 70;
     return Scaffold(
       appBar: AppBar(
@@ -118,39 +143,42 @@ class _AdminPostReportScreenState extends State<AdminPostReportScreen> {
       key: _scaffoldKey,
       endDrawer: AdminNavigateDrawer(
         userData: widget.userData,
-        userModel: widget.userModel,
       ),
-      body: Container(
-        color: Colors.black,
-        child: ListView.separated(
-          itemCount: posts.length,
-          itemBuilder: (BuildContext context, int index) {
-            final post = posts[index];
-            if (index == 0)
-              return Container(
-                padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
-                height: 24,
-                child: Text(
-                  'Admin - Post Report Review',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              );
-            return PostContainer(
-              userData: widget.userData,
-              post: post,
-              type: 'report',
-              userModel: widget.userModel,
-            );
-          },
-          separatorBuilder: (context, index) => SizedBox(
-            height: 10,
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
+            height: 24,
+            child: Text(
+              'Admin - Post Report Review',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
+          Expanded(
+            child: Container(
+              color: Colors.black,
+              child: ListView.separated(
+                itemCount: posts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final post = posts[index];
+                  return PostContainer(
+                    userData: widget.userData,
+                    post: post,
+                    type: 'report',
+                  );
+                },
+                separatorBuilder: (context, index) => SizedBox(
+                  height: 10,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

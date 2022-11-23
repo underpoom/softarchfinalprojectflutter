@@ -19,7 +19,7 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   }
 
   String ads =
-      "https://scontent.fbkk2-8.fna.fbcdn.net/v/t1.6435-9/30441178_1708109815943486_3812504059043119104_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=ad2b24&_nc_eui2=AeG9iADga4oU8aZfSgydY1XDPiiv0fRh-_U-KK_R9GH79Rmx7Jvfx9bO5nqCGD4hliM5a5RQAyn4G3VNKP7p7CxS&_nc_ohc=-R7hR6YD7jwAX8q3Nxu&tn=zczj23AEyJI8ak6P&_nc_ht=scontent.fbkk2-8.fna&oh=00_AfBDtp0AuHSIu7CLujo980LOIdJoMhuLZL4FAQOa5rc6cw&oe=639035C4";
+      "https://lh3.googleusercontent.com/p/AF1QipNgFsi8U7oENhNoGeiHI69A0micRa1JChpDFE7J=s680-w680-h510";
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,7 +36,7 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   }
 
   _launchURL() async {
-    const url = 'https://www.facebook.com/profile.php?id=100004449705370';
+    const url = 'https://liff.line.me/1645278921-kWRPP32q/?accountId=274blseg';
     if (await canLaunch(url)) {
       await launch(url);
     } else {

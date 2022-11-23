@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:softarchfinal/callapi.dart';
 import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/post_info.dart';
 import 'package:softarchfinal/model/user_info.dart';
 import 'package:softarchfinal/pages/othersprofilepage.dart';
 import 'package:softarchfinal/widgets/tag_button.dart';
@@ -10,26 +12,50 @@ import 'package:softarchfinal/widgets/tag_button.dart';
 class PostContainer extends StatefulWidget {
   //type = approve report admin user owner
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
   final String type;
-  final Map post;
-  const PostContainer(
-      {Key? key,
-      required this.post,
-      required this.type,
-      required this.userData,
-      required this.userModel})
-      : super(key: key);
+  final PostInfoModel post;
+  const PostContainer({
+    Key? key,
+    required this.post,
+    required this.type,
+    required this.userData,
+  }) : super(key: key);
 
   @override
   State<PostContainer> createState() => _PostContainer();
 }
 
 class _PostContainer extends State<PostContainer> {
+  UserInfoModel? owner;
+  List tags = [];
+  int owner_id = 0;
+  @override
+  void initState() {
+    super.initState();
+    GetPostOwner(widget.post.post_id).then((user_id) {
+      setState(() {
+        getUser(user_id).then((value) {
+          setState(() {
+            this.owner = value;
+          });
+        });
+      });
+    });
+    /*findOwner(widget.post.post_id).then((owners) {
+      setState(() {
+        this.owner = owners;
+      });
+    });*/
+    GetPostTags(widget.post.post_id).then((tags) {
+      setState(() {
+        this.tags = tags;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     const double avatarDiameter = 44;
-    var now = DateTime.now();
     return Center(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.95,
@@ -59,7 +85,7 @@ class _PostContainer extends State<PostContainer> {
                         borderRadius: BorderRadius.circular(avatarDiameter / 2),
                         //ใส่รูป
                         child: Image(
-                          image: NetworkImage(widget.post['user_pic']),
+                          image: NetworkImage(owner!.profile_pic_url),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -81,13 +107,13 @@ class _PostContainer extends State<PostContainer> {
                                     MaterialPageRoute(builder: (context) {
                                   return OthersProfilePage(
                                     userData: widget.userData,
-                                    userModel: widget.userModel,
+                                    profile_id: owner!.user_id,
                                   );
                                 }));
                               },
                               child: Text(
                                 //ใส่ชื่อแต่ละคนโพสต์
-                                widget.post['username'],
+                                owner!.display_name,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
@@ -95,13 +121,12 @@ class _PostContainer extends State<PostContainer> {
                               ),
                             ),
                             SizedBox(width: 10),
-                            if (widget.post['user_verify'] != null)
-                              if (widget.post['user_verify'])
-                                FaIcon(
-                                  FontAwesomeIcons.userCheck,
-                                  size: 15,
-                                  color: Colors.green,
-                                )
+                            if (owner!.verified == 2)
+                              FaIcon(
+                                FontAwesomeIcons.userCheck,
+                                size: 15,
+                                color: Colors.green,
+                              )
                           ],
                         ),
                         Row(
@@ -112,13 +137,12 @@ class _PostContainer extends State<PostContainer> {
                               height: 15,
                               width: MediaQuery.of(context).size.width * 0.5,
                               child: ListView.builder(
-                                itemCount: widget.post['tags'].length,
+                                itemCount: tags.length,
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (context, index) {
                                   return TagButton(
                                     userData: widget.userData,
-                                    userModel: widget.userModel,
-                                    tags: widget.post['tags'][index],
+                                    tags: tags[index],
                                   );
                                 },
                               ),
@@ -132,22 +156,29 @@ class _PostContainer extends State<PostContainer> {
                     IconButton(
                         icon: FaIcon(FontAwesomeIcons.flag),
                         iconSize: 23.0,
-                        onPressed: () => print("report")),
+                        onPressed: () async {
+                          print(await AddReportCount(widget.post.post_id));
+                        }),
                   if (widget.type == 'admin' || widget.type == 'owner')
                     IconButton(
                         icon: FaIcon(FontAwesomeIcons.trashCan),
                         iconSize: 23.0,
-                        onPressed: () => print("report")),
+                        onPressed: () async {
+                          print(await RemovePost(widget.post.post_id,
+                              widget.userData.user.user_id));
+                        }),
                   if (widget.type == 'report')
                     IconButton(
                         icon: FaIcon(FontAwesomeIcons.xmark),
                         iconSize: 23.0,
-                        onPressed: () => print("report")),
+                        onPressed: () async {
+                          print(await ResetReportCount(widget.post.post_id));
+                        }),
                 ],
               ),
-              _postCaption(context, widget.post['postText']),
-              if (widget.post['attachedImageUrl'] != '')
-                _postImage(context, widget.post['attachedImageUrl']),
+              _postCaption(context, widget.post.post_text),
+              if (widget.post.attached_image_url != '')
+                _postImage(context, widget.post.attached_image_url),
               Row(
                 children: [
                   Expanded(
@@ -157,7 +188,7 @@ class _PostContainer extends State<PostContainer> {
                         Container(
                           margin: EdgeInsets.fromLTRB(25, 0, 0, 0),
                           child: Text(
-                            widget.post['post_date'],
+                            '${widget.post.post_date.day}/${widget.post.post_date.month}/${widget.post.post_date.year}   ${widget.post.post_date.hour.toString().padLeft(2, '0')}.${widget.post.post_date.minute.toString().padLeft(2, '0')} น.',
                             style: TextStyle(
                                 fontSize: 12, fontWeight: FontWeight.w600),
                           ),
@@ -169,13 +200,16 @@ class _PostContainer extends State<PostContainer> {
                     IconButton(
                         icon: FaIcon(FontAwesomeIcons.share),
                         iconSize: 23.0,
-                        onPressed: () => print("share")),
+                        onPressed: () async {
+                          await CreateShare(widget.userData.user.user_id,
+                              widget.post.post_id);
+                        }),
                   if (widget.type == 'report')
                     Row(
                       children: [
                         Text(
                           'Report count : ' +
-                              widget.post['report_count'].toString(),
+                              widget.post.report_count.toString(),
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -184,7 +218,10 @@ class _PostContainer extends State<PostContainer> {
                         IconButton(
                             icon: FaIcon(FontAwesomeIcons.trashCan),
                             iconSize: 23.0,
-                            onPressed: () => print("share")),
+                            onPressed: () async {
+                              print(await RemovePost(widget.post.post_id,
+                                  widget.userData.user.user_id));
+                            }),
                       ],
                     ),
                   if (widget.type == 'approve')
@@ -206,7 +243,12 @@ class _PostContainer extends State<PostContainer> {
                                   color: Colors.white,
                                   icon: FaIcon(FontAwesomeIcons.check),
                                   iconSize: 23.0,
-                                  onPressed: () => print("share")),
+                                  onPressed: () async {
+                                    print(await SetPostVerification(
+                                        widget.post.post_id,
+                                        widget.userData.user.user_id,
+                                        true));
+                                  }),
                             ),
                           ),
                         ),
@@ -226,7 +268,10 @@ class _PostContainer extends State<PostContainer> {
                                   color: Colors.white,
                                   icon: FaIcon(FontAwesomeIcons.xmark),
                                   iconSize: 23.0,
-                                  onPressed: () => print("share")),
+                                  onPressed: () async {
+                                    print(await RemovePost(widget.post.post_id,
+                                        widget.userData.user.user_id));
+                                  }),
                             ),
                           ),
                         ),
@@ -239,6 +284,12 @@ class _PostContainer extends State<PostContainer> {
         ),
       ),
     );
+  }
+
+  Future<UserInfoModel> findOwner(int post_id) async {
+    var postowner = await GetPostOwner(post_id);
+    UserInfoModel owner = await getUser(postowner);
+    return owner;
   }
 }
 

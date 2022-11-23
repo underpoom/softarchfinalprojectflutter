@@ -17,7 +17,7 @@ class UserInfoModel {
     required this.user_type,
     required this.verified,
     required this.report_count,
-    required String last_name,
+    required this.last_name,
   });
   late final int user_id;
   late final String email;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:softarchfinal/callapi.dart';
 import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/post_info.dart';
 import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
 import 'package:softarchfinal/widgets/circle_button.dart';
 import 'package:softarchfinal/widgets/create_post_contrainer.dart';
@@ -9,13 +10,13 @@ import 'package:softarchfinal/widgets/navigation_drawer.dart';
 import 'package:softarchfinal/widgets/post_container.dart';
 import 'package:softarchfinal/model/user_info.dart';
 
-/*var now = DateTime.now();
+var now = DateTime.now();
 bool isAdmin = false;
 
-String user_pic =
-    "https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg";
+//String user_pic =
+//    "https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg";
 
-List posts = [
+/*List posts = [
   {'postID': 0},
   {
     'postID': 1,
@@ -59,10 +60,8 @@ List posts = [
 ];*/
 
 class userdisplay extends StatefulWidget {
-  const userdisplay({Key? key, required this.userData, required this.userModel})
-      : super(key: key);
+  const userdisplay({Key? key, required this.userData}) : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
   @override
   State<userdisplay> createState() => _userdisplayState();
@@ -70,7 +69,6 @@ class userdisplay extends StatefulWidget {
 
 class _userdisplayState extends State<userdisplay> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
   }
@@ -80,18 +78,31 @@ class _userdisplayState extends State<userdisplay> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    /*List<PostInfoModel> posts = widget.userData.posts;
+    posts.insert(
+        0,
+        PostInfoModel(
+            post_id: -1,
+            post_date: DateTime.now(),
+            post_text: '',
+            attached_image_url: '',
+            verified: true,
+            report_count: 0));*/
     return MaterialApp(
       home: Scaffold(
         key: _scaffoldKey,
-        endDrawer: widget.userData.user_role == 1
+        endDrawer: widget.userData.user.user_type == 1
             ? AdminNavigateDrawer(
                 userData: widget.userData,
-                userModel: widget.userModel,
               )
             : NavigateDrawer(
                 userData: widget.userData,
-                userModel: widget.userModel,
               ),
         bottomNavigationBar: BottomBannerAd(),
         appBar: AppBar(
@@ -132,8 +143,7 @@ class _userdisplayState extends State<userdisplay> {
             Container(
               child: CreatePostContrainer(
                 userData: widget.userData,
-                userModel: widget.userModel,
-                image: NetworkImage(widget.userModel.profile_pic_url),
+                image: NetworkImage(widget.userData.user.profile_pic_url),
               ),
             ),
             Expanded(
@@ -143,13 +153,15 @@ class _userdisplayState extends State<userdisplay> {
                   itemCount: widget.userData.posts.length,
                   itemBuilder: (BuildContext context, int index) {
                     final post = widget.userData.posts[index];
-                    if (index == 0) return Container();
-                    return PostContainer(
-                      userData: widget.userData,
-                      userModel: widget.userModel,
-                      post: post,
-                      type: widget.userData.user_role == 1 ? 'admin' : 'user',
-                    );
+                    if (post.verified)
+                      return PostContainer(
+                        userData: widget.userData,
+                        post: post,
+                        type: widget.userData.user.user_type == 1
+                            ? 'admin'
+                            : 'user',
+                      );
+                    return Container();
                   },
                   separatorBuilder: (context, index) => SizedBox(
                     height: 10,

@@ -18,13 +18,15 @@ import 'package:softarchfinal/pages/userreport.dart';
 import 'package:softarchfinal/pages/userverified.dart';
 import 'package:textfield_search/textfield_search.dart';
 
-class NavigateDrawer extends StatelessWidget {
-  const NavigateDrawer(
-      {Key? key, required this.userData, required this.userModel})
-      : super(key: key);
+class NavigateDrawer extends StatefulWidget {
+  const NavigateDrawer({Key? key, required this.userData}) : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
+  @override
+  State<NavigateDrawer> createState() => _NavigateDrawer();
+}
+
+class _NavigateDrawer extends State<NavigateDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -74,13 +76,12 @@ class NavigateDrawer extends StatelessWidget {
             style: TextStyle(color: Colors.white, fontSize: 24),
           ),
           onTap: () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) {
               return userdisplay(
-                userData: userData,
-                userModel: userModel,
+                userData: widget.userData,
               );
-            }));
+            }), (route) => false);
           },
         ),
         ListTile(
@@ -96,8 +97,7 @@ class NavigateDrawer extends StatelessWidget {
             Navigator.pop(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return ForYouScreen(
-                userData: userData,
-                userModel: userModel,
+                userData: widget.userData,
               );
             }));
           },
@@ -125,7 +125,7 @@ class NavigateDrawer extends StatelessWidget {
               onTap: () {
                 //action on press
                 Navigator.pop(context);
-                _showAddTag(context, userData, userModel);
+                _showAddTag(context, widget.userData);
               },
             ),
 
@@ -144,8 +144,7 @@ class NavigateDrawer extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return FollowingTagScreen(
-                    userData: userData,
-                    userModel: userModel,
+                    userData: widget.userData,
                   );
                 }));
               },
@@ -167,8 +166,7 @@ class NavigateDrawer extends StatelessWidget {
             Navigator.pop(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return UserProfilePage(
-                userData: userData,
-                userModel: userModel,
+                userData: widget.userData,
               );
             }));
           },
@@ -211,13 +209,16 @@ class NavigateDrawer extends StatelessWidget {
   }
 }
 
-class AdminNavigateDrawer extends StatelessWidget {
-  const AdminNavigateDrawer(
-      {Key? key, required this.userData, required this.userModel})
+class AdminNavigateDrawer extends StatefulWidget {
+  const AdminNavigateDrawer({Key? key, required this.userData})
       : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
+  @override
+  State<AdminNavigateDrawer> createState() => _AdminNavigateDrawer();
+}
+
+class _AdminNavigateDrawer extends State<AdminNavigateDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -268,12 +269,12 @@ class AdminNavigateDrawer extends StatelessWidget {
           ),
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) {
               return userdisplay(
-                userData: userData,
-                userModel: userModel,
+                userData: widget.userData,
               );
-            }));
+            }), (route) => false);
           },
         ),
         ListTile(
@@ -289,8 +290,7 @@ class AdminNavigateDrawer extends StatelessWidget {
             Navigator.pop(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return ForYouScreen(
-                userData: userData,
-                userModel: userModel,
+                userData: widget.userData,
               );
             }));
           },
@@ -317,7 +317,7 @@ class AdminNavigateDrawer extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.pop(context);
-                _showAddTag(context, userData, userModel);
+                _showAddTag(context, widget.userData);
               },
             ),
 
@@ -336,8 +336,7 @@ class AdminNavigateDrawer extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return FollowingTagScreen(
-                    userData: userData,
-                    userModel: userModel,
+                    userData: widget.userData,
                   );
                 }));
               },
@@ -359,8 +358,7 @@ class AdminNavigateDrawer extends StatelessWidget {
             Navigator.pop(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return UserProfilePage(
-                userData: userData,
-                userModel: userModel,
+                userData: widget.userData,
               );
             }));
           },
@@ -389,8 +387,7 @@ class AdminNavigateDrawer extends StatelessWidget {
                 //action on press
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return AdminPostApproveScreen(
-                    userData: userData,
-                    userModel: userModel,
+                    userData: widget.userData,
                   );
                 }));
               },
@@ -410,8 +407,7 @@ class AdminNavigateDrawer extends StatelessWidget {
                 //action on press
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return AdminPostReportScreen(
-                    userData: userData,
-                    userModel: userModel,
+                    userData: widget.userData,
                   );
                 }));
               },
@@ -431,8 +427,7 @@ class AdminNavigateDrawer extends StatelessWidget {
                 //action on press
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return UserVerifiedScreen(
-                    userData: userData,
-                    userModel: userModel,
+                    userData: widget.userData,
                   );
                 }));
               },
@@ -451,8 +446,7 @@ class AdminNavigateDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return UserReportScreen(
-                    userData: userData,
-                    userModel: userModel,
+                    userData: widget.userData,
                   );
                 }));
               },
@@ -490,8 +484,7 @@ Future<List> fetchdata() async {
   return _reallist;
 }
 
-Future<String?> _showAddTag(BuildContext context, LoginResponseModel userData,
-    final UserInfoModel userModel) {
+Future<String?> _showAddTag(BuildContext context, LoginResponseModel userData) {
   TextEditingController myController = TextEditingController();
 
   return showDialog<String>(
@@ -526,7 +519,6 @@ Future<String?> _showAddTag(BuildContext context, LoginResponseModel userData,
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return TagDisplayScreen(
                     userData: userData,
-                    userModel: userModel,
                     tagtopic: searchtag,
                   );
                 }));

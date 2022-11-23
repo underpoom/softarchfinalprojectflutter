@@ -141,13 +141,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             LoginResponseModel userData =
                                 loginResponseJson(status.body);
 
-                            var userModel = await getUser(userData.user_id);
-
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(builder: (context) {
                               return userdisplay(
                                 userData: userData,
-                                userModel: userModel,
                               );
                             }), (route) => false);
                           }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:softarchfinal/callapi.dart';
 import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/post_info.dart';
 import 'package:softarchfinal/model/user_info.dart';
 import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
 import 'package:softarchfinal/widgets/circle_button.dart';
@@ -10,7 +12,7 @@ import 'package:softarchfinal/widgets/navigation_drawer.dart';
 import 'package:softarchfinal/widgets/post_container.dart';
 
 var now = DateTime.now();
-bool isAdmin = false;
+//bool isAdmin = false;
 bool tagstatus = false;
 //String tagtoppic = 'รักภูมิ';
 //List taglist = ['รักภูมิ', 'ไอควาย'];
@@ -59,13 +61,9 @@ bool tagstatus = false;
 
 class TagDisplayScreen extends StatefulWidget {
   const TagDisplayScreen(
-      {Key? key,
-      required this.userData,
-      required this.userModel,
-      required this.tagtopic})
+      {Key? key, required this.userData, required this.tagtopic})
       : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
   final String tagtopic;
 
   @override
@@ -74,6 +72,8 @@ class TagDisplayScreen extends StatefulWidget {
 
 class _TagDisplayScreenState extends State<TagDisplayScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<Map> posts = [];
+  Map help = {};
 
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
@@ -84,8 +84,35 @@ class _TagDisplayScreenState extends State<TagDisplayScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    setState(() {
+      widget.userData.posts.forEach((item) {
+        this.help['post_id'] = item.post_id;
+        this.help['post_date'] = item.post_date;
+        this.help['post_text'] = item.post_text;
+        this.help['attached_image_url'] = item.attached_image_url;
+        this.help['verified'] = item.verified;
+        this.help['report_count'] = item.report_count;
+        GetPostTags(item.post_id).then((tags) {
+          setState(() {
+            this.help['tags'] = tags;
+          });
+        });
+        posts.add(help);
+      });
+    });
+    setState(() {
+      this.posts.sort((b, a) {
+        return a['post_id'].compareTo(b['post_id']);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    bool isAdmin = true;
+    // posts.insert(0, {});
+    //bool isAdmin = true;
     const double avatarDiameter = 70;
     return Scaffold(
       bottomNavigationBar: BottomBannerAd(),
@@ -124,83 +151,88 @@ class _TagDisplayScreenState extends State<TagDisplayScreen> {
         ],
       ),
       key: _scaffoldKey,
-      endDrawer: isAdmin
+      endDrawer: widget.userData.user.user_type == 1
           ? AdminNavigateDrawer(
               userData: widget.userData,
-              userModel: widget.userModel,
             )
           : NavigateDrawer(
               userData: widget.userData,
-              userModel: widget.userModel,
             ),
-      body: Container(
-        color: Colors.black,
-        child: ListView.separated(
-          itemCount: widget.userData.posts.length,
-          itemBuilder: (BuildContext context, int index) {
-            final post = widget.userData.posts[index];
-            if (index == 0)
-              return Container(
-                color: Color.fromRGBO(217, 217, 217, 1),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Column(
+        children: [
+          Container(
+            color: Color.fromRGBO(217, 217, 217, 1),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '#$widget.tagtoppic',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                  Row(
                     children: [
-                      Text(
-                        '#$widget.tagtoppic',
-                        style: TextStyle(fontSize: 30),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (tagstatus)
+                            setState(() => tagstatus = false);
+                          else
+                            setState(() => tagstatus = true);
+                        },
+                        child: Text(tagstatus ? 'ติดตามแล้ว' : 'ติดตาม'),
+                        style: ElevatedButton.styleFrom(
+                          shape: StadiumBorder(),
+                          primary: tagstatus ? Colors.blue : Colors.orange,
+                        ),
                       ),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              if (tagstatus)
-                                setState(() => tagstatus = false);
-                              else
-                                setState(() => tagstatus = true);
-                            },
-                            child: Text(tagstatus ? 'ติดตามแล้ว' : 'ติดตาม'),
-                            style: ElevatedButton.styleFrom(
-                              shape: StadiumBorder(),
-                              primary: tagstatus ? Colors.blue : Colors.orange,
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(6.0),
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(132, 131, 130, 100),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: FaIcon(FontAwesomeIcons.flag),
-                              iconSize: 23,
-                              color: Colors.black,
-                              onPressed: () {
-                                print('test');
-                              },
-                            ),
-                          ),
-                        ],
+                      Container(
+                        margin: const EdgeInsets.all(6.0),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(132, 131, 130, 100),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: FaIcon(FontAwesomeIcons.flag),
+                          iconSize: 23,
+                          color: Colors.black,
+                          onPressed: () {
+                            print('test');
+                          },
+                        ),
                       ),
                     ],
                   ),
-                ),
-              );
-            //if (taglist.any((e) => post['tags'].contains(e)))
-            if (post['tags'].contains(widget.tagtopic))
-              return PostContainer(
-                userData: widget.userData,
-                userModel: widget.userModel,
-                post: post,
-                type: isAdmin ? 'admin' : 'user',
-              );
-            return Container();
-          },
-          separatorBuilder: (context, index) => SizedBox(
-            height: 10,
+                ],
+              ),
+            ),
           ),
-        ),
+          Expanded(
+            child: Container(
+              color: Colors.black,
+              child: ListView.separated(
+                itemCount: posts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final post = posts[index];
+                  //if (taglist.any((e) => post['tags'].contains(e)))
+                  if (post['tags'].contains(widget.tagtopic) &&
+                      post['verified'])
+                    return PostContainer(
+                      userData: widget.userData,
+                      post: widget.userData.posts[index],
+                      type: widget.userData.user.user_type == 1
+                          ? 'admin'
+                          : 'user',
+                    );
+                  return Container();
+                },
+                separatorBuilder: (context, index) => SizedBox(
+                  height: 10,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
     /*return Scaffold(

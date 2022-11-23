@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:softarchfinal/callapi.dart';
 import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/post_info.dart';
 import 'package:softarchfinal/model/user_info.dart';
 import 'package:softarchfinal/widgets/circle_button.dart';
 import 'package:softarchfinal/widgets/navigation_drawer.dart';
 import 'package:softarchfinal/widgets/post_container.dart';
 
 //text url tag userid
-var now = DateTime.now();
+/*var now = DateTime.now();
 List posts = [
   {'postID': 0},
   {
@@ -48,14 +50,12 @@ List posts = [
     'post_date':
         '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.'
   },
-];
+];*/
 
 class AdminPostApproveScreen extends StatefulWidget {
-  const AdminPostApproveScreen(
-      {Key? key, required this.userData, required this.userModel})
+  const AdminPostApproveScreen({Key? key, required this.userData})
       : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
   @override
   State<AdminPostApproveScreen> createState() => _AdminPostApproveScreenState();
@@ -63,6 +63,7 @@ class AdminPostApproveScreen extends StatefulWidget {
 
 class _AdminPostApproveScreenState extends State<AdminPostApproveScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<PostInfoModel> posts = [];
 
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
@@ -73,9 +74,32 @@ class _AdminPostApproveScreenState extends State<AdminPostApproveScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    GetAllUnverifiedPosts(widget.userData.user.user_id).then((posts) {
+      setState(() {
+        this.posts = posts;
+      });
+    });
+    setState(() {
+      this.posts.sort((a, b) {
+        return a.post_id.compareTo(b.post_id);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print(posts.length);
-    bool isAdmin = true;
+    /*posts.insert(
+        0,
+        PostInfoModel(
+            post_id: -1,
+            post_date: DateTime.now(),
+            post_text: '',
+            attached_image_url: '',
+            verified: true,
+            report_count: 0));*/
+    //bool isAdmin = true;
     const double avatarDiameter = 70;
     return Scaffold(
       appBar: AppBar(
@@ -115,39 +139,42 @@ class _AdminPostApproveScreenState extends State<AdminPostApproveScreen> {
       key: _scaffoldKey,
       endDrawer: AdminNavigateDrawer(
         userData: widget.userData,
-        userModel: widget.userModel,
       ),
-      body: Container(
-        color: Colors.black,
-        child: ListView.separated(
-          itemCount: posts.length,
-          itemBuilder: (BuildContext context, int index) {
-            final post = posts[index];
-            if (index == 0)
-              return Container(
-                padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
-                height: 24,
-                child: Text(
-                  'Admin - Post Review',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              );
-            return PostContainer(
-              userData: widget.userData,
-              post: post,
-              type: 'approve',
-              userModel: widget.userModel,
-            );
-          },
-          separatorBuilder: (context, index) => SizedBox(
-            height: 10,
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
+            height: 24,
+            child: Text(
+              'Admin - Post Review',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
+          Expanded(
+            child: Container(
+              color: Colors.black,
+              child: ListView.separated(
+                itemCount: posts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final post = posts[index];
+                  return PostContainer(
+                    userData: widget.userData,
+                    post: post,
+                    type: 'approve',
+                  );
+                },
+                separatorBuilder: (context, index) => SizedBox(
+                  height: 10,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

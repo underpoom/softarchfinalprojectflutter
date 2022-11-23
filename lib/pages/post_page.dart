@@ -23,10 +23,8 @@ import 'package:softarchfinal/widgets/tag_button.dart';
 import 'package:softarchfinal/callapi.dart';
 
 class PostPage extends StatefulWidget {
-  const PostPage({Key? key, required this.userData, required this.userModel})
-      : super(key: key);
+  const PostPage({Key? key, required this.userData}) : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
   @override
   State<PostPage> createState() => _PostPageState();
@@ -132,7 +130,7 @@ class _PostPageState extends State<PostPage> {
                   onPressed: (() => Navigator.pop(context, 'Cancel')),
                   child: const Text('Cancel')),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.of(context).pop(myController.text);
 
                   if (_taglist.contains(myController.text) == false &&
@@ -217,7 +215,6 @@ class _PostPageState extends State<PostPage> {
                                   MaterialPageRoute(builder: (context) {
                                 return UserProfilePage(
                                   userData: widget.userData,
-                                  userModel: widget.userModel,
                                 );
                               }));
                             },
@@ -258,7 +255,6 @@ class _PostPageState extends State<PostPage> {
                                     MaterialPageRoute(builder: (context) {
                                   return UserProfilePage(
                                     userData: widget.userData,
-                                    userModel: widget.userModel,
                                   );
                                 }));
                               },
@@ -412,6 +408,8 @@ class _PostPageState extends State<PostPage> {
                                         postText = _Textcontroller.text;
                                         dataShooter(UserID, Username, Userpic,
                                             postText, imageURL, _taglist);
+                                        CreatePost(widget.userData.user.user_id,
+                                            postText, imageURL, _taglist);
                                         postText = '';
                                         imageURL = '';
                                         _taglist = [];
@@ -453,9 +451,9 @@ class _PostPageState extends State<PostPage> {
       'tags': "${_taglist}"
     });
 
-    Future<int> status = CreatePost(UserID, postText, imageURL, _taglist);
+    int status = await CreatePost(UserID, postText, imageURL, _taglist);
 
-    print(shot);
+    print(status);
   }
 
   bool showButton() {

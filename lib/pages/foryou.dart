@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:softarchfinal/callapi.dart';
 import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/post_info.dart';
 import 'package:softarchfinal/model/user_info.dart';
 import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
 import 'package:softarchfinal/widgets/circle_button.dart';
 import 'package:softarchfinal/widgets/navigation_drawer.dart';
 import 'package:softarchfinal/widgets/post_container.dart';
 
-var now = DateTime.now();
+/*var now = DateTime.now();
 String username = '윤보미 Chaipanna';
 bool isAdmin = true;
 List taglist = ['รักภูมิ', 'ไอควาย'];
@@ -54,14 +56,11 @@ List posts = [
     'post_date':
         '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.'
   },
-];
+];*/
 
 class ForYouScreen extends StatefulWidget {
-  const ForYouScreen(
-      {Key? key, required this.userData, required this.userModel})
-      : super(key: key);
+  const ForYouScreen({Key? key, required this.userData}) : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
   @override
   State<ForYouScreen> createState() => _ForYouScreen();
@@ -69,7 +68,9 @@ class ForYouScreen extends StatefulWidget {
 
 class _ForYouScreen extends State<ForYouScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  List users = [];
+  List tags = [];
+  List<PostInfoModel> posts = [];
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
   }
@@ -79,7 +80,62 @@ class _ForYouScreen extends State<ForYouScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    GetFollowingTags(widget.userData.user.user_id).then((tags) {
+      setState(() {
+        this.tags = tags;
+      });
+    });
+    GetFollowingUsers(widget.userData.user.user_id).then((users) {
+      setState(() {
+        this.users = users;
+      });
+    });
+    tags.forEach((tag) {
+      GetAllPostByTags(tag).then((postList) {
+        setState(() {
+          postList.forEach((item) {
+            bool check = true;
+            posts.forEach((e) {
+              if (e.post_id == item.post_id) check = false;
+            });
+            if (check) posts.add(item);
+          });
+        });
+      });
+    });
+    users.forEach((user) {
+      GetAllPostbyUser(user).then((postList) {
+        setState(() {
+          postList.forEach((item) {
+            bool check = true;
+            posts.forEach((e) {
+              if (e.post_id == item.post_id) check = false;
+            });
+            if (check) posts.add(item);
+          });
+        });
+      });
+    });
+    setState(() {
+      this.posts.sort((b, a) {
+        return a.post_id.compareTo(b.post_id);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    /*posts.insert(
+        0,
+        PostInfoModel(
+            post_id: -1,
+            post_date: DateTime.now(),
+            post_text: '',
+            attached_image_url: '',
+            verified: true,
+            report_count: 0));*/
     const double avatarDiameter = 70;
     return Scaffold(
       bottomNavigationBar: BottomBannerAd(),
@@ -118,49 +174,54 @@ class _ForYouScreen extends State<ForYouScreen> {
         ],
       ),
       key: _scaffoldKey,
-      endDrawer: isAdmin
+      endDrawer: widget.userData.user.user_type == 1
           ? AdminNavigateDrawer(
               userData: widget.userData,
-              userModel: widget.userModel,
             )
           : NavigateDrawer(
               userData: widget.userData,
-              userModel: widget.userModel,
             ),
-      body: Container(
-        color: Colors.black,
-        child: ListView.separated(
-          itemCount: posts.length,
-          itemBuilder: (BuildContext context, int index) {
-            final post = posts[index];
-            if (index == 0)
-              return Container(
-                padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
-                height: 24,
-                child: Text(
-                  'For you',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              );
-            if (taglist.any((e) => post['tags'].contains(e)) ||
-                post['username'] == username)
-              return PostContainer(
-                userData: widget.userData,
-                post: post,
-                type: isAdmin ? 'admin' : 'user',
-                userModel: widget.userModel,
-              );
-            return Container();
-          },
-          separatorBuilder: (context, index) => SizedBox(
-            height: 10,
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
+            height: 24,
+            child: Text(
+              'For you',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
+          Expanded(
+            child: Container(
+              color: Colors.black,
+              child: ListView.separated(
+                itemCount: posts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final post = posts[index];
+                  // if (tags.any((e) => post['tags'].contains(e)) ||
+                  //    post['username'] == username)
+                  if (post.verified)
+                    return PostContainer(
+                      userData: widget.userData,
+                      post: post,
+                      type: widget.userData.user.user_type == 1
+                          ? 'admin'
+                          : 'user',
+                    );
+                  return Container();
+                },
+                separatorBuilder: (context, index) => SizedBox(
+                  height: 10,
+                ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

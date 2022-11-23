@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:softarchfinal/callapi.dart';
 import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/post_info.dart';
 import 'package:softarchfinal/model/user_info.dart';
 import 'package:softarchfinal/pages/editprofilepage.dart';
 import 'package:softarchfinal/widgets/bottom_banner_ad.dart';
@@ -9,7 +11,7 @@ import 'package:softarchfinal/widgets/navigation_drawer.dart';
 import 'package:softarchfinal/widgets/post_container.dart';
 import 'package:softarchfinal/widgets/widgets.dart';
 
-var now = DateTime.now();
+/*var now = DateTime.now();
 List posts = [
   {'postID': 0},
   {
@@ -45,20 +47,18 @@ List posts = [
     'post_date':
         '${now.day}/${now.month}/${now.year}   ${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')} น.'
   },
-];
+];*/
 
 class UserProfilePage extends StatefulWidget {
-  const UserProfilePage(
-      {Key? key, required this.userData, required this.userModel})
-      : super(key: key);
+  const UserProfilePage({Key? key, required this.userData}) : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
   @override
   State<UserProfilePage> createState() => _UserProfilePageState();
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<PostInfoModel> posts = [];
 
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
@@ -68,15 +68,45 @@ class _UserProfilePageState extends State<UserProfilePage> {
     Navigator.of(context).pop();
   }
 
-  String avatarURL1 =
-      "https://cdn.discordapp.com/avatars/695875199291228181/ff8949df85c202c508357c7a0bb1acd6.webp?size=80";
+  @override
+  void initState() {
+    super.initState();
+    GetAllPostbyUser(widget.userData.user.user_id).then((posts) {
+      setState(() {
+        this.posts = posts;
+      });
+    });
+    GetAllPostsSharedByUser(widget.userData.user.user_id).then((post) {
+      setState(() {
+        this.posts = new List.from(this.posts)..addAll(post);
+      });
+    });
+    setState(() {
+      this.posts.sort((b, a) {
+        return a.post_id.compareTo(b.post_id);
+      });
+    });
+  }
+
+  //String avatarURL1 =
+  //    "https://cdn.discordapp.com/avatars/695875199291228181/ff8949df85c202c508357c7a0bb1acd6.webp?size=80";
   Widget build(BuildContext context) {
+    posts.insert(
+        0,
+        PostInfoModel(
+            post_id: -1,
+            post_date: DateTime.now(),
+            post_text: '',
+            attached_image_url: '',
+            verified: true,
+            report_count: 0));
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: NavigateDrawer(
-        userData: widget.userData,
-        userModel: widget.userModel,
-      ),
+      endDrawer: widget.userData.user.user_type == 1
+          ? AdminNavigateDrawer(userData: widget.userData)
+          : NavigateDrawer(
+              userData: widget.userData,
+            ),
       bottomNavigationBar: BottomBannerAd(),
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -122,7 +152,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
           CircleAvatar(
             radius: 56,
-            backgroundImage: NetworkImage(avatarURL1),
+            backgroundImage: NetworkImage(widget.userData.user.profile_pic_url),
           ),
           SizedBox(
             height: 12.0,
@@ -132,7 +162,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Thanapum Chaipunna",
+                widget.userData.user.display_name,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -146,7 +176,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return EditProfilepage();
+                      return EditProfilepage(
+                        userData: widget.userData,
+                      );
                     }));
                   }),
             ],
@@ -174,7 +206,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     userData: widget.userData,
                     post: post,
                     type: 'owner',
-                    userModel: widget.userModel,
                   );
                 },
                 separatorBuilder: (context, index) => SizedBox(

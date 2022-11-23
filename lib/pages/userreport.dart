@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:softarchfinal/callapi.dart';
 import 'package:softarchfinal/model/login_response.dart';
 import 'package:softarchfinal/model/user_info.dart';
 import 'package:softarchfinal/widgets/profile_container.dart';
 
 import '../widgets/widgets.dart';
 
-var now = DateTime.now();
+/*var now = DateTime.now();
 List profiles = [
   {'profileID': 0},
   {
@@ -44,14 +45,11 @@ List profiles = [
     'mobile_number': '082-368-6056',
     'report_count': 6,
   },
-];
+];*/
 
 class UserReportScreen extends StatefulWidget {
-  const UserReportScreen(
-      {Key? key, required this.userData, required this.userModel})
-      : super(key: key);
+  const UserReportScreen({Key? key, required this.userData}) : super(key: key);
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
   @override
   State<UserReportScreen> createState() => _UserReportScreenState();
@@ -59,6 +57,7 @@ class UserReportScreen extends StatefulWidget {
 
 class _UserReportScreenState extends State<UserReportScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<UserInfoModel> users = [];
 
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
@@ -69,7 +68,38 @@ class _UserReportScreenState extends State<UserReportScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    GetAllReportedUsers(widget.userData.user.user_id).then((users) {
+      setState(() {
+        this.users = users;
+      });
+    });
+    setState(() {
+      this.users.sort((b, a) {
+        return a.report_count.compareTo(b.report_count);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    /*users.insert(
+        0,
+        UserInfoModel(
+            user_id: -1,
+            email: '',
+            pass_hash: '',
+            pass_salt: '',
+            mobile_no: '',
+            first_name: '',
+            verificationToken: '',
+            profile_pic_url: '',
+            display_name: '',
+            user_type: -1,
+            verified: 2,
+            report_count: 0,
+            last_name: ''));*/
     const double avatarDiameter = 70;
     return Scaffold(
       appBar: AppBar(
@@ -109,34 +139,41 @@ class _UserReportScreenState extends State<UserReportScreen> {
       key: _scaffoldKey,
       endDrawer: AdminNavigateDrawer(
         userData: widget.userData,
-        userModel: widget.userModel,
       ),
-      body: Container(
-        color: Colors.black,
-        child: ListView.separated(
-          itemCount: profiles.length,
-          itemBuilder: (BuildContext context, int index) {
-            final profile = profiles[index];
-            if (index == 0)
-              return Container(
-                padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
-                height: 24,
-                child: Text(
-                  'Admin - User Report Review',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              );
-            return ProfileContainer(profile: profile, type: 'report');
-          },
-          separatorBuilder: (context, index) => SizedBox(
-            height: 10,
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 12, 0, 0),
+            height: 24,
+            child: Text(
+              'Admin - Verify Review',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
+          Expanded(
+            child: Container(
+              color: Colors.black,
+              child: ListView.separated(
+                itemCount: users.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final profile = users[index];
+                  return ProfileContainer(
+                      profile: profile,
+                      type: 'report',
+                      userData: widget.userData);
+                },
+                separatorBuilder: (context, index) => SizedBox(
+                  height: 10,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

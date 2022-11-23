@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:softarchfinal/callapi.dart';
+import 'package:softarchfinal/model/login_response.dart';
+import 'package:softarchfinal/model/user_info.dart';
 
 class ProfileContainer extends StatefulWidget {
   // type = verify , report
   final String type;
-  final Map profile;
-  const ProfileContainer({Key? key, required this.type, required this.profile})
+  final LoginResponseModel userData;
+  final UserInfoModel profile;
+  const ProfileContainer(
+      {Key? key,
+      required this.type,
+      required this.profile,
+      required this.userData})
       : super(key: key);
 
   @override
@@ -48,7 +56,7 @@ class _ProfileContainerState extends State<ProfileContainer> {
                         borderRadius: BorderRadius.circular(avatarDiameter / 2),
                         //ใส่รูป
                         child: Image(
-                          image: NetworkImage(widget.profile['user_pic']),
+                          image: NetworkImage(widget.profile.profile_pic_url),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -64,7 +72,7 @@ class _ProfileContainerState extends State<ProfileContainer> {
                       children: [
                         Text(
                           //ใส่ชื่อแต่ละคนโพสต์
-                          widget.profile['username'],
+                          widget.profile.display_name,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -74,11 +82,13 @@ class _ProfileContainerState extends State<ProfileContainer> {
                     ),
                   ),
                   if (widget.type == 'report')
-                    if (widget.type == 'report')
-                      IconButton(
-                          icon: FaIcon(FontAwesomeIcons.xmark),
-                          iconSize: 23.0,
-                          onPressed: () => print("report")),
+                    IconButton(
+                        icon: FaIcon(FontAwesomeIcons.xmark),
+                        iconSize: 23.0,
+                        onPressed: () async {
+                          print(await userResetReportCount(
+                              widget.profile.user_id));
+                        }),
                 ],
               ),
               Padding(
@@ -90,21 +100,19 @@ class _ProfileContainerState extends State<ProfileContainer> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.profile['first_name'] +
-                          ' ' +
-                          widget.profile['last_name'],
+                      widget.profile.first_name + ' '+  widget.profile.last_name,
                       style: TextStyle(
                         color: Colors.black,
                       ),
                     ),
                     Text(
-                      widget.profile['email'],
+                      widget.profile.email,
                       style: TextStyle(
                         color: Colors.black,
                       ),
                     ),
                     Text(
-                      widget.profile['mobile_number'],
+                      widget.profile.mobile_no,
                       style: TextStyle(
                         color: Colors.black,
                       ),
@@ -118,7 +126,7 @@ class _ProfileContainerState extends State<ProfileContainer> {
                   children: [
                     Text(
                       'Report count : ' +
-                          widget.profile['report_count'].toString(),
+                          widget.profile.report_count.toString(),
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -127,7 +135,10 @@ class _ProfileContainerState extends State<ProfileContainer> {
                     IconButton(
                         icon: FaIcon(FontAwesomeIcons.trashCan),
                         iconSize: 23.0,
-                        onPressed: () => print("share")),
+                        onPressed: () async {
+                          print(await RemoveUser(widget.profile.user_id,
+                              widget.userData.user.user_id));
+                        }),
                   ],
                 ),
               if (widget.type == 'verify')
@@ -152,7 +163,12 @@ class _ProfileContainerState extends State<ProfileContainer> {
                                   color: Colors.white,
                                   icon: FaIcon(FontAwesomeIcons.check),
                                   iconSize: 23.0,
-                                  onPressed: () => print("share")),
+                                  onPressed: () async {
+                                    print(await SetUserVerification(
+                                        widget.profile.user_id,
+                                        widget.userData.user.user_id,
+                                        2));
+                                  }),
                             ),
                           ),
                         ),
@@ -172,7 +188,12 @@ class _ProfileContainerState extends State<ProfileContainer> {
                                   color: Colors.white,
                                   icon: FaIcon(FontAwesomeIcons.xmark),
                                   iconSize: 23.0,
-                                  onPressed: () => print("share")),
+                                  onPressed: () async {
+                                    print(await SetUserVerification(
+                                        widget.profile.user_id,
+                                        widget.userData.user.user_id,
+                                        0));
+                                  }),
                             ),
                           ),
                         ),

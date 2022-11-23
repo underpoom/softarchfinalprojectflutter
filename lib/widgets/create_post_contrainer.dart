@@ -10,13 +10,12 @@ class CreatePostContrainer extends StatelessWidget {
   //รับค่าจากรูปโปร user จาก backend
   final NetworkImage image;
   final LoginResponseModel userData;
-  final UserInfoModel userModel;
 
-  const CreatePostContrainer(
-      {super.key,
-      required this.image,
-      required this.userData,
-      required this.userModel});
+  const CreatePostContrainer({
+    super.key,
+    required this.image,
+    required this.userData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,6 @@ class CreatePostContrainer extends StatelessWidget {
                         MaterialPageRoute(builder: (context) {
                       return UserProfilePage(
                         userData: userData,
-                        userModel: userModel,
                       );
                     }));
                   },
@@ -55,7 +53,6 @@ class CreatePostContrainer extends StatelessWidget {
                       MaterialPageRoute(builder: (context) {
                     return PostPage(
                       userData: userData,
-                      userModel: userModel,
                     );
                   })),
                   child: Align(

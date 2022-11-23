@@ -109,7 +109,7 @@ class _FollowingTagScreen extends State<FollowingTagScreen> {
 
   @override
   Widget build(BuildContext context) {
-    posts.insert(
+    /*posts.insert(
         0,
         PostInfoModel(
             post_id: -1,
@@ -117,7 +117,7 @@ class _FollowingTagScreen extends State<FollowingTagScreen> {
             post_text: '',
             attached_image_url: '',
             verified: true,
-            report_count: 0));
+            report_count: 0));*/
     bool isAdmin = true;
     const double avatarDiameter = 70;
     return Scaffold(
@@ -194,9 +194,10 @@ class _FollowingTagScreen extends State<FollowingTagScreen> {
                     );
                   return Container();
                 },
-                separatorBuilder: (context, index) => SizedBox(
-                  height: 10,
-                ),
+                separatorBuilder: (context, index) =>
+                    widget.userData.posts[index].verified
+                        ? SizedBox(height: 10)
+                        : SizedBox(),
               ),
             ),
           ),

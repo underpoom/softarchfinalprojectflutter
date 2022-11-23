@@ -91,15 +91,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
   //String avatarURL1 =
   //    "https://cdn.discordapp.com/avatars/695875199291228181/ff8949df85c202c508357c7a0bb1acd6.webp?size=80";
   Widget build(BuildContext context) {
-    posts.insert(
-        0,
-        PostInfoModel(
-            post_id: -1,
-            post_date: DateTime.now(),
-            post_text: '',
-            attached_image_url: '',
-            verified: true,
-            report_count: 0));
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: widget.userData.user.user_type == 1
@@ -201,16 +192,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 itemCount: posts.length,
                 itemBuilder: (BuildContext context, int index) {
                   final post = posts[index];
-                  if (index == 0) return Container();
                   return PostContainer(
                     userData: widget.userData,
                     post: post,
                     type: 'owner',
                   );
                 },
-                separatorBuilder: (context, index) => SizedBox(
-                  height: 10,
-                ),
+                separatorBuilder: (context, index) =>
+                    widget.userData.posts[index].verified
+                        ? SizedBox(height: 10)
+                        : SizedBox(),
               ),
             ),
           ),

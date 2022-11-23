@@ -163,9 +163,10 @@ class _userdisplayState extends State<userdisplay> {
                       );
                     return Container();
                   },
-                  separatorBuilder: (context, index) => SizedBox(
-                    height: 10,
-                  ),
+                  separatorBuilder: (context, index) =>
+                      widget.userData.posts[index].verified
+                          ? SizedBox(height: 10)
+                          : SizedBox(),
                 ),
               ),
             ),

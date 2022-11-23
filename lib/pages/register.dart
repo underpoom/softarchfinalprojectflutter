@@ -184,7 +184,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               (onValidateVal) {
                 final form = globalKey.currentState;
                 form?.save();
-                if (onValidateVal.isEmpty || conPassword != password) {
+                if (onValidateVal.isEmpty ||
+                    conPassword != passwordController.text) {
                   return 'This must not be empty or must be same as password.';
                 }
 

@@ -230,6 +230,26 @@ Future<int> AddReportCount(int id) async {
   return response.statusCode;
 }
 
+Future<int> GetPostReportCount(int postID) async {
+  final url = Uri.parse("$baseUrl/api/Post/GetPostReportCount/$postID");
+  var response = await http.get(url);
+  int n_report_count = int.parse(response.body);
+  return n_report_count;
+}
+
+Future<List> GetPostTags(int postID) async {
+  final url = Uri.parse("$baseUrl/api/Post/GetPostTags/$postID");
+  var response = await http.get(url);
+  List tags = json.decode(response.body) as List;
+  return tags;
+}
+
+Future<List> GetAllVerifiedPost(int postID) async {
+  final url = Uri.parse("$baseUrl/api/Post/GetAllVerifiedPost");
+  var response = await http.get(url);
+  List tags = json.decode(response.body) as List;
+  return tags;
+}
 
 Future<String> getAllTags() async {
   final url = Uri.parse("$baseUrl/api/Post/GetAllTags");
@@ -252,13 +272,6 @@ Future<String> GetPostDataFromPostID(int postID) async {
   var response = await http.get(url);
 
   return response.body;
-}
-
-Future<List> GetPostTags(int postID) async {
-  final url = Uri.parse("$baseUrl/api/Post/GetPostTags/$postID");
-  var response = await http.get(url);
-  List tags = json.decode(response.body) as List;
-  return tags;
 }
 
 Future<List<PostInfoModel>> GetAllPostbyUser(int userID) async {

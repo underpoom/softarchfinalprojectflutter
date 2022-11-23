@@ -103,13 +103,13 @@ class _PostContainer extends State<PostContainer> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.push(context,
+                                /*Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return OthersProfilePage(
                                     userData: widget.userData,
                                     profile_id: owner!.user_id,
                                   );
-                                }));
+                                }));*/
                               },
                               child: Text(
                                 //ใส่ชื่อแต่ละคนโพสต์

@@ -127,7 +127,7 @@ class _EditProfilePageState extends State<EditProfilepage> {
                                     fit: BoxFit.cover,
                                   )
                                 : Image.network(
-                                    avatarURL2,
+                                    widget.userData.user.profile_pic_url,
                                     fit: BoxFit.cover,
                                   ),
                           ),

@@ -107,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           onChange: (val) {},
                           initialValue: "",
-                          obscureText: false,
+                          obscureText: true,
                           borderFocusColor: Colors.black,
                           prefixIconColor: Theme.of(context).primaryColor,
                           borderColor: Colors.black.withOpacity(0.2),

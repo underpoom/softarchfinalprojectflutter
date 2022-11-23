@@ -259,9 +259,10 @@ class _OthersProfilePage extends State<OthersProfilePage> {
                       );
                     return Container();
                   },
-                  separatorBuilder: (context, index) => SizedBox(
-                    height: 10,
-                  ),
+                  separatorBuilder: (context, index) =>
+                      widget.userData.posts[index].verified
+                          ? SizedBox(height: 10)
+                          : SizedBox(),
                 ),
               ),
             ),

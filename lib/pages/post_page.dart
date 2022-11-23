@@ -235,7 +235,8 @@ class _PostPageState extends State<PostPage> {
                                     BorderRadius.circular(avatarDiameter / 2),
                                 //ใส่รูป
                                 child: Image(
-                                  image: NetworkImage(Userpic),
+                                  image: NetworkImage(
+                                      widget.userData.user.profile_pic_url),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -266,7 +267,7 @@ class _PostPageState extends State<PostPage> {
                                     0),
                                 child: Text(
                                   //ใส่ชื่อแต่ละคนโพสต์
-                                  Username,
+                                  widget.userData.user.display_name,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
@@ -369,7 +370,7 @@ class _PostPageState extends State<PostPage> {
                                 ],
                               ),
                             ),
-                            Image.file(image!),
+                            Image.file(image!, height: 200, width: 200),
                           ] else ...[
                             Text("No image selected"),
                           ]
@@ -406,10 +407,16 @@ class _PostPageState extends State<PostPage> {
                                     onPressed: () {
                                       setState(() {
                                         postText = _Textcontroller.text;
-                                        dataShooter(UserID, Username, Userpic,
-                                            postText, imageURL, _taglist);
-                                        CreatePost(widget.userData.user.user_id,
-                                            postText, imageURL, _taglist);
+                                        dataShooter(
+                                            widget.userData.user.user_id,
+                                            widget.userData.user.display_name,
+                                            widget
+                                                .userData.user.profile_pic_url,
+                                            postText,
+                                            imageURL,
+                                            _taglist);
+                                        /*CreatePost(widget.userData.user.user_id,
+                                            postText, imageURL, _taglist);*/
                                         postText = '';
                                         imageURL = '';
                                         _taglist = [];
